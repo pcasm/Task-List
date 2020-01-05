@@ -1,0 +1,18 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "label": "Kitchen Cleanup",
+      "description": "Clean my kitchen",
+      "category": "house",
+      "done": false
+    },
+    {
+      "id": 2,
+      "label": "Taxes",
+      "description": "Start doing my taxes",
+      "category": "bureaucracy",
+      "done": "22/10/2019"
+    }
+  ]
+}

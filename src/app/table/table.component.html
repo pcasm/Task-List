@@ -1,0 +1,78 @@
+<div [hidden]="editingTask">
+  <div>
+    <button type="button" mat-stroked-button color="primary" (click)="editingTask = true">New task</button>
+  </div>
+
+  <!--Filter inputs-->
+  <form>
+    <mat-form-field>
+      <mat-label>Filter by label</mat-label>
+      <input matInput [formControl]="labelFilter" maxlength="30">
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Filter by description</mat-label>
+      <input matInput [formControl]="descriptionFilter" maxlength="30">
+    </mat-form-field>
+  </form>
+
+  <!--Task list-->
+  <div>
+    <table mat-table [dataSource]="dataSource" >
+      <ng-container *ngFor="let row of tableRows" [matColumnDef]=row>
+        <mat-header-cell class="capitalize" *matHeaderCellDef>
+          {{row}}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let item">
+          <div class="capitalize" *ngIf="row != 'actions'">
+            {{item[row] | formatTexts}}
+          </div>
+          <div *ngIf="row === 'actions'">
+            <mat-chip-list>
+              <mat-chip (click)="editTask(item)" color="primary" selected>Edit</mat-chip>
+              <mat-chip (click)="deleteTask(item)" color="warn" selected>Delete</mat-chip>
+            </mat-chip-list>
+          </div>
+        </mat-cell>
+      </ng-container>
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: tableRows"></mat-row>
+    </table>
+  </div>
+</div>
+
+<!--Task form-->
+<div *ngIf="editingTask">
+  <form #form1 (submit)="saveTask()">
+    <mat-form-field>
+      <input [(ngModel)]="currentItem.label" #label="ngModel" name="label" required matInput placeholder="Label" maxlength="20">
+      <mat-error *ngIf="label.hasError('required')">
+        Label is <strong>required</strong>
+      </mat-error>
+    </mat-form-field>
+    <mat-form-field>
+      <input [(ngModel)]="currentItem.description" #description="ngModel" name="description" required matInput placeholder="Description" maxlength="60">
+      <mat-error *ngIf="description.hasError('required')">
+        Description is <strong>required</strong>
+      </mat-error>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-select [(ngModel)]="currentItem.category" #category="ngModel" name="category" required placeholder="Category">
+        <mat-option value="house">House</mat-option>
+        <mat-option value="bureaucracy">Bureaucracy</mat-option>
+        <mat-option value="health">Health</mat-option>
+        <mat-option value="sport">Sport</mat-option>
+        <mat-option value="kids">Kids</mat-option>
+        <mat-option value="studies">Studies</mat-option>
+        <mat-option value="other">Other</mat-option>
+      </mat-select>
+      <mat-error *ngIf="category.hasError('required')">
+        Category is <strong>required</strong>
+      </mat-error>
+    </mat-form-field>
+      <mat-checkbox class="left-margin" [(ngModel)]="currentItem.done" name="done">Done</mat-checkbox>
+    <div class="buttons">
+      <button type="submit" mat-stroked-button color="primary">Save</button>
+      <button type="button" mat-stroked-button color="warn" (click)="editingTask = false; form1.reset()">Cancel</button>
+    </div>
+  </form>
+</div>
