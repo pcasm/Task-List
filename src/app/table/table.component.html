@@ -1,6 +1,7 @@
+<div>{{currentItem | json}}</div>
 <div [hidden]="editingTask">
   <div>
-    <button type="button" mat-stroked-button color="primary" (click)="editingTask = true">New task</button>
+    <button type="button" mat-stroked-button color="primary" (click)="newTask();">New task</button>
   </div>
 
   <!--Filter inputs-->
@@ -69,10 +70,10 @@
         Category is <strong>required</strong>
       </mat-error>
     </mat-form-field>
-      <mat-checkbox class="left-margin" [(ngModel)]="currentItem.done" name="done">Done</mat-checkbox>
+      <mat-checkbox class="left-margin" [(ngModel)]="currentItem.done" name="done" (click)="doneCheckboxClick();">Done</mat-checkbox>
     <div class="buttons">
       <button type="submit" mat-stroked-button color="primary">Save</button>
-      <button type="button" mat-stroked-button color="warn" (click)="editingTask = false; form1.reset()">Cancel</button>
+      <button type="button" mat-stroked-button color="warn" (click)="editingTask = false; form1.reset();">Cancel</button>
     </div>
   </form>
 </div>
