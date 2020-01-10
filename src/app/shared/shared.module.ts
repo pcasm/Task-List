@@ -32,9 +32,10 @@ import {
   MatSortModule,
   MatPaginatorModule
 } from '@angular/material';
+import { YesOrNoDialogComponent } from './dialogs/yes-or-no-dialog/yes-or-no-dialog.component';
 
 @NgModule({
-  declarations: [],
+  declarations: [YesOrNoDialogComponent],
   imports: [
     CommonModule,
     MatCheckboxModule,
@@ -68,6 +69,9 @@ import {
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
+  ],
+  entryComponents: [
+    YesOrNoDialogComponent
   ],
   exports: [MatCheckboxModule,
     MatCheckboxModule,

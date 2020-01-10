@@ -1,12 +1,14 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {ToDoListService} from '../services/to-do-list.service';
-import {MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
+import {MAT_CHECKBOX_CLICK_ACTION, MatDialog, MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
 import {FormControl} from '@angular/forms';
+import {YesOrNoDialogComponent} from '../shared/dialogs/yes-or-no-dialog/yes-or-no-dialog.component';
 
 @Component({
   selector: 'app-table',
   templateUrl: './table.component.html',
-  styleUrls: ['./table.component.scss']
+  styleUrls: ['./table.component.scss'],
+  providers: [{provide: MAT_CHECKBOX_CLICK_ACTION, useValue: 'noop'}]
 })
 export class TableComponent implements OnInit {
   @ViewChild(MatSort, {static: true}) sort: MatSort;
@@ -27,7 +29,7 @@ export class TableComponent implements OnInit {
   descriptionFilter = new FormControl('');
   filterValues = {label: '', description: ''};
 
-  constructor(private _ToDoListService: ToDoListService) {
+  constructor(private _ToDoListService: ToDoListService, public dialog: MatDialog) {
     this.displayedColumns = this.tableRows;
     this.dataSource.filterPredicate = this.tableFilter();
   }
@@ -73,11 +75,6 @@ export class TableComponent implements OnInit {
   saveTask() {
     // Proceed only if all required fields are filled
     if (this.currentItem.label && this.currentItem.category && this.currentItem.description) {
-      if (this.currentItem.done === true) {
-        // If 'Done' is checked with no date, save the current date
-        const date = new Date();
-        this.currentItem.done = date.toLocaleDateString();
-      }
       this._ToDoListService.saveTask(
         this.currentItem.id,
         this.currentItem.label,
@@ -96,8 +93,44 @@ export class TableComponent implements OnInit {
 
   editTask(task) {
     this.currentItem = new Task(task.id, task.label, task.description, task.category, task.done);
-
     this.editingTask = true;
+  }
+
+  newTask() {
+    this.currentItem = new Task();
+    this.editingTask = true;
+  }
+
+  doneCheckboxClick() {
+    const currentDate = new Date().toLocaleDateString();
+    // If the user is trying to mark the task as done, save the current date and check the checkbox
+    if (!this.currentItem.done) {
+      this.currentItem.done = currentDate;
+      // If the user is trying to set the task as undone, and the current done date is different than the saved one,
+      // warn the user that the date will be updated
+    } else {
+      if (this.currentItem.done !== currentDate) {
+        const dialogRef = this.dialog.open(YesOrNoDialogComponent, {
+          width: '380px',
+          data: {
+            title: `This task was marked as done on the ${this.currentItem.done}`,
+            text: 'If you uncheck the Done button, and then check it again, ' +
+              'the completed task date will be set as today, after saving changes.',
+            question: 'Would you like to continue?',
+            yesText: 'Yes, please',
+            noText: 'No'
+          }
+        });
+        dialogRef.afterClosed().subscribe(result => {
+          // Set the task as undone if the user agrees that the former completed task date will be lost
+          if (result) {
+            this.currentItem.done = false;
+          }
+        });
+      } else {
+        this.currentItem.done = false;
+      }
+    }
   }
 
   tableFilter(): (data: any, filter: string) => boolean {
@@ -115,7 +148,7 @@ class Task {
   label: string;
   description: string;
   category: string;
-  done: boolean | string;
+  done: string | boolean;
   constructor(id?, label?, description?, category?, done?) {
     this.id = id || null;
     this.label = label || '';
