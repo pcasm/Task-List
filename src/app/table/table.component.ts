@@ -63,13 +63,26 @@ export class TableComponent implements OnInit {
   }
 
   deleteTask(task) {
-    this._ToDoListService.deleteTaskFromId(task.id)
-      .subscribe((data: any) => {
-        this.getToDoListItems();
-        }, error => {
-        window.alert('Error!');
-        }
-      );
+    const dialogRef = this.dialog.open(YesOrNoDialogComponent, {
+      width: '380px',
+      data: {
+        title: 'Deleting task',
+        question: 'Are you sure you want to delete the task?',
+        yesText: 'Yes, delete it permanently',
+        noText: 'No'
+      }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this._ToDoListService.deleteTaskFromId(task.id)
+        .subscribe((data: any) => {
+            this.getToDoListItems();
+          }, error => {
+            window.alert('Error!');
+          }
+        );
+      }
+    });
   }
 
   saveTask() {
