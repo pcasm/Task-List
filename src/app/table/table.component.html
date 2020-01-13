@@ -27,10 +27,12 @@
             {{item[row] | formatTexts}}
           </div>
           <div *ngIf="row === 'actions'">
-            <mat-chip-list>
-              <mat-chip (click)="editTask(item)" color="primary" selected>Edit</mat-chip>
-              <mat-chip (click)="deleteTask(item)" color="warn" selected>Delete</mat-chip>
-            </mat-chip-list>
+              <button mat-button (click)="editTask(item)" color="primary" selected>
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-button (click)="deleteTask(item)" color="warn" selected>
+                <mat-icon>delete</mat-icon>
+              </button>
           </div>
         </mat-cell>
       </ng-container>
